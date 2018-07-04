@@ -18,13 +18,18 @@ class App extends Component {
     message: "",
     history: []
   };
-  componentDidMount() {
+  componentDidMount=()=> {
     db.collection("chat-messages")
       .get()
-      .then(function(doc) {
+      .then((doc)=> {
         //
         doc.forEach(element => {
           console.log(element.data().message);
+          this.setState(prevState => {
+            return {
+              history: [...prevState.history, element.data().message]
+            };
+          });
         });
       })
       .catch(function(error) {
