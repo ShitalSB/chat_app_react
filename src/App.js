@@ -2,13 +2,13 @@ import React, { Component } from "react";
 import "./App.css";
 const firebase = require("firebase");
 require("firebase/firestore");
-const config = {
-  apiKey: "AIzaSyBS_M75DmUROiK9Rvwbe9fFIIX3SKR4EdQ",
-  authDomain: "chat-app-63a35.firebaseapp.com",
-  databaseURL: "https://chat-app-63a35.firebaseio.com",
-  projectId: "chat-app-63a35",
-  storageBucket: "chat-app-63a35.appspot.com",
-  messagingSenderId: "23285117397"
+var config = {
+  apiKey: "AIzaSyD5OQdN3kOk_bGtXbDZDONCDfuUEFBCYYE",
+  authDomain: "chat-app-v2-a8ca0.firebaseapp.com",
+  databaseURL: "https://chat-app-v2-a8ca0.firebaseio.com",
+  projectId: "chat-app-v2-a8ca0",
+  storageBucket: "",
+  messagingSenderId: "1024349411698"
 };
 firebase.initializeApp(config);
 let db = firebase.firestore();
@@ -18,16 +18,21 @@ class App extends Component {
     message: "",
     history: []
   };
-  componentDidMount=()=> {
-    setInterval(()=>{
-      let newArray=[];
-      db.collection("chat-messages")
+  componentDidMount = () => {
+    // setInterval(()=>{
+    let newArray = [];
+    db.collection("chat-messages")
       .get()
-      .then((doc)=> {
-        //
+      .then(doc => {
         doc.forEach(element => {
-          newArray.push(element.data().message)
-         
+          newArray.push({
+            message: element.data().message,
+            date: element.data().timestamp
+          });
+        });
+        console.log(newArray);
+        newArray.sort((a, b) => {
+          return new Date(a.date).getTime() - new Date(b.date).getTime();
         });
         this.setState(prevState => {
           return {
@@ -38,23 +43,37 @@ class App extends Component {
       .catch(function(error) {
         console.log("Error getting document:", error);
       });
-    },1000)
-   
-  }
+    // },500)
+  };
   sendMessage = e => {
     e.preventDefault();
+    const date = new Date();
     if (this.state.message) {
       db.collection("chat-messages")
-        .add({ message: this.state.message })
+        .add({
+          message: this.state.message,
+          timestamp:
+            date.getMonth() +
+            "/" +
+            date.getHours() +
+            "/" +
+            date.getFullYear() +
+            " " +
+            date.getHours() +
+            ":" +
+            date.getMinutes() +
+            ":" +
+            date.getSeconds()
+        })
         .then(response => {
-          console.log(response);
+          this.setState({ message: "" });
         });
-     
     }
   };
   handleMessage = e => {
     this.setState({ message: e.target.value });
   };
+
   render() {
     return (
       <div className="App">
@@ -70,10 +89,11 @@ class App extends Component {
           {!this.state.history.length && (
             <div className="noMessage">You do not any messages</div>
           )}
-          {this.state.history.map((message, index) => {
+          {this.state.history.map((mes, index) => {
             return (
               <p className="message" key={index}>
-                {message}
+                {mes.message}
+                <sub>{mes.date}</sub>
               </p>
             );
           })}
