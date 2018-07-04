@@ -19,15 +19,18 @@ class App extends Component {
   render() {
     return (
       <div className="App">
+        <h1 className='heading'>Welcome!</h1>
         <form onSubmit={this.sendMessage}>
           <input
+            className="inputMessage"
             type="text"
+            placeholder='Type your message and hit enter'
             value={this.state.message}
             onChange={this.handleMessage}
           />
-          {!this.state.history.length && <div>you do not any messages</div>}
+          {!this.state.history.length && <div className='noMessage'>You do not any messages</div>}
           {this.state.history.map((message,index)=>{
-            return <p key={index}>{message}</p>
+            return <p className='message' key={index}>{message}</p>
           })}
         </form>
       </div>
