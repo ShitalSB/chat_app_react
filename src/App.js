@@ -28,7 +28,7 @@ class App extends Component {
             value={this.state.message}
             onChange={this.handleMessage}
           />
-          {!this.state.history.length && <div className='noMessage'>You do not any messages</div>}
+          {!this.state.history.length && <div className='noMessage'>You do not have any messages</div>}
           {this.state.history.map((message,index)=>{
             return <p className='message' key={index}>{message}</p>
           })}
