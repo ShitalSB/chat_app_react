@@ -19,22 +19,27 @@ class App extends Component {
     history: []
   };
   componentDidMount=()=> {
-    db.collection("chat-messages")
+    setInterval(()=>{
+      let newArray=[];
+      db.collection("chat-messages")
       .get()
       .then((doc)=> {
         //
         doc.forEach(element => {
-          console.log(element.data().message);
-          this.setState(prevState => {
-            return {
-              history: [...prevState.history, element.data().message]
-            };
-          });
+          newArray.push(element.data().message)
+         
+        });
+        this.setState(prevState => {
+          return {
+            history: newArray
+          };
         });
       })
       .catch(function(error) {
         console.log("Error getting document:", error);
       });
+    },1000)
+   
   }
   sendMessage = e => {
     e.preventDefault();
@@ -44,12 +49,7 @@ class App extends Component {
         .then(response => {
           console.log(response);
         });
-      this.setState(prevState => {
-        return {
-          history: [...prevState.history, prevState.message],
-          message: ""
-        };
-      });
+     
     }
   };
   handleMessage = e => {
