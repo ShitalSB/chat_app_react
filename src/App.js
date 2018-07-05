@@ -1,6 +1,15 @@
 import React, { Component } from "react";
 import "./App.css";
+import { Route, Redirect } from "react-router-dom";
+import Login from "./Login.js";
+import Messages from "./Messages.js";
+import LoginWithEmail from './LoginWithEmail'
+
+
+
 const firebase = require("firebase");
+var provider = new firebase.auth.GoogleAuthProvider();
+
 require("firebase/firestore");
 var config = {
   apiKey: "AIzaSyD5OQdN3kOk_bGtXbDZDONCDfuUEFBCYYE",
@@ -11,8 +20,10 @@ var config = {
   messagingSenderId: "1024349411698"
 };
 firebase.initializeApp(config);
+
 let db = firebase.firestore();
 db.settings({ timestampsInSnapshots: true });
+
 class App extends Component {
   state = {
     message: "",
@@ -77,27 +88,42 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <h1 className="heading">Welcome!</h1>
-        <form onSubmit={this.sendMessage}>
-          <input
-            className="inputMessage"
-            type="text"
-            placeholder="Type your message and hit enter"
-            value={this.state.message}
-            onChange={this.handleMessage}
-          />
-          {!this.state.history.length && (
-            <div className="noMessage">You do not any messages</div>
-          )}
-          {this.state.history.map((mes, index) => {
+        <Route
+          exact
+          path="/"
+          render={() => {
+            return <Redirect to="/Login" />;
+          }}
+        />
+         <Route
+          exact
+          path="/LoginWithEmail"
+          render={() => {
+            return <LoginWithEmail />;
+          }}
+        />
+        <Route
+          exact
+          path="/Login"
+          render={() => {
+            return <Login />;
+          }}
+        />
+
+        <Route
+          exact
+          path="/Messages"
+          render={() => {
             return (
-              <p className="message" key={index}>
-                {mes.message}
-                <sub>{mes.date}</sub>
-              </p>
+              <Messages
+                history={this.state.history}
+                message={this.state.message}
+                handleMessage={this.handleMessage}
+                sendMessage={this.sendMessage}
+              />
             );
-          })}
-        </form>
+          }}
+        />
       </div>
     );
   }
